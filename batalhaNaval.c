@@ -1,85 +1,124 @@
 #include <stdio.h>
 
-// Definindo constantes para facilitar a manutenção e leitura do código
+// Definindo constantes para o tamanho do tabuleiro e dos navios
 #define TAM_TABULEIRO 10
 #define TAM_NAVIO 3
 
 int main() {
-    // 1. Representação do Tabuleiro
-    // Matriz 10x10 inicializada automaticamente com 0s (representando a água).
+    // 1. Inicialização do Tabuleiro 10x10 com 0s (água)
     int tabuleiro[TAM_TABULEIRO][TAM_TABULEIRO] = {0};
 
-    // 2. Representação dos Navios
-    // Vetor unidimensional que guarda os blocos do navio (valor 3).
+    // Vetor unidimensional representando as 3 partes estruturais do navio
     int navio[TAM_NAVIO] = {3, 3, 3};
 
-    // --- Configuração do Navio Horizontal ---
-    // Coordenadas de início (linha 2, coluna 2)
-    int linha_h = 2;
-    int coluna_h = 2;
-    int sobreposicao_h = 0; // Flag para verificar sobreposição
 
-    // Verifica se o navio horizontal cabe dentro dos limites do tabuleiro
+    // --- 1. POSICIONAMENTO: NAVIO HORIZONTAL ---
+    int linha_h = 0;
+    int coluna_h = 0;
+    int sobreposicao_h = 0;
+
+    // Validação de limites (coluna inicial + tamanho não pode estourar o limite direito)
     if (coluna_h + TAM_NAVIO <= TAM_TABULEIRO && linha_h < TAM_TABULEIRO) {
-        // Verifica se há alguma parte de outro navio no caminho (sobreposição)
         for (int i = 0; i < TAM_NAVIO; i++) {
             if (tabuleiro[linha_h][coluna_h + i] != 0) {
                 sobreposicao_h = 1;
             }
         }
-        
-        // Se estiver dentro dos limites e sem sobreposição, posiciona o navio
         if (sobreposicao_h == 0) {
             for (int i = 0; i < TAM_NAVIO; i++) {
-                // Copia o valor do vetor 'navio' para a matriz 'tabuleiro'
                 tabuleiro[linha_h][coluna_h + i] = navio[i];
             }
         } else {
-            printf("Erro: O navio horizontal irá se sobrepor a outro.\n");
+            printf("Erro: Sobreposição no navio horizontal.\n");
         }
     } else {
-        printf("Erro: As coordenadas do navio horizontal excedem o tabuleiro.\n");
+        printf("Erro: Navio horizontal fora dos limites.\n");
     }
 
-    // --- Configuração do Navio Vertical ---
-    // Coordenadas de início (linha 5, coluna 7)
-    int linha_v = 5;
-    int coluna_v = 7;
-    int sobreposicao_v = 0; // Flag para verificar sobreposição
 
-    // Verifica se o navio vertical cabe dentro dos limites do tabuleiro
+    // --- 2. POSICIONAMENTO: NAVIO VERTICAL ---
+    int linha_v = 2;
+    int coluna_v = 0;
+    int sobreposicao_v = 0;
+
+    // Validação de limites (linha inicial + tamanho não pode estourar o limite inferior)
     if (linha_v + TAM_NAVIO <= TAM_TABULEIRO && coluna_v < TAM_TABULEIRO) {
-        // Verifica se há sobreposição antes de posicionar
         for (int i = 0; i < TAM_NAVIO; i++) {
             if (tabuleiro[linha_v + i][coluna_v] != 0) {
                 sobreposicao_v = 1;
             }
         }
-        
-        // Se válido, posiciona o navio vertical
         if (sobreposicao_v == 0) {
             for (int i = 0; i < TAM_NAVIO; i++) {
-                // O deslocamento agora é feito nas linhas, mantendo a coluna fixa
                 tabuleiro[linha_v + i][coluna_v] = navio[i];
             }
         } else {
-            printf("Erro: O navio vertical irá se sobrepor a outro.\n");
+            printf("Erro: Sobreposição no navio vertical.\n");
         }
     } else {
-        printf("Erro: As coordenadas do navio vertical excedem o tabuleiro.\n");
+        printf("Erro: Navio vertical fora dos limites.\n");
     }
 
-    // 3. Exibição do Tabuleiro
-    printf("--- Tabuleiro de Batalha Naval ---\n\n");
+
+    // --- 3. POSICIONAMENTO: NAVIO DIAGONAL DESCENDENTE (Noroeste para Sudeste) ---
+    // Linha aumenta e Coluna aumenta simultaneamente
+    int linha_d1 = 1;
+    int coluna_d1 = 5;
+    int sobreposicao_d1 = 0;
+
+    // Validação: Garante que nem a linha nem a coluna ultrapassem o limite máximo (9)
+    if (linha_d1 + TAM_NAVIO <= TAM_TABULEIRO && coluna_d1 + TAM_NAVIO <= TAM_TABULEIRO) {
+        for (int i = 0; i < TAM_NAVIO; i++) {
+            if (tabuleiro[linha_d1 + i][coluna_d1 + i] != 0) {
+                sobreposicao_d1 = 1;
+            }
+        }
+        if (sobreposicao_d1 == 0) {
+            for (int i = 0; i < TAM_NAVIO; i++) {
+                tabuleiro[linha_d1 + i][coluna_d1 + i] = navio[i];
+            }
+        } else {
+            printf("Erro: Sobreposição no navio diagonal descendente.\n");
+        }
+    } else {
+        printf("Erro: Navio diagonal descendente fora dos limites.\n");
+    }
+
+
+    // --- 4. POSICIONAMENTO: NAVIO DIAGONAL ASCENDENTE (Sudoeste para Nordeste) ---
+    // Linha diminui e Coluna aumenta simultaneamente
+    int linha_d2 = 8;
+    int coluna_d2 = 2;
+    int sobreposicao_d2 = 0;
+
+    // Validação: A linha recua (subindo no mapa) e a coluna avança (indo para a direita)
+    if (linha_d2 - TAM_NAVIO + 1 >= 0 && coluna_d2 + TAM_NAVIO <= TAM_TABULEIRO) {
+        for (int i = 0; i < TAM_NAVIO; i++) {
+            if (tabuleiro[linha_d2 - i][coluna_d2 + i] != 0) {
+                sobreposicao_d2 = 1;
+            }
+        }
+        if (sobreposicao_d2 == 0) {
+            for (int i = 0; i < TAM_NAVIO; i++) {
+                tabuleiro[linha_d2 - i][coluna_d2 + i] = navio[i];
+            }
+        } else {
+            printf("Erro: Sobreposição no navio diagonal ascendente.\n");
+        }
+    } else {
+        printf("Erro: Navio diagonal ascendente fora dos limites.\n");
+    }
+
+
+    // --- 3. EXIBIÇÃO DO TABULEIRO COMPLETO ---
+    printf("--- Tabuleiro de Batalha Naval - Nível Aventureiro ---\n\n");
     
-    // Loop aninhado para percorrer cada linha e coluna da matriz
+    // Loops aninhados para renderizar as linhas e colunas alinhadas com espaços
     for (int i = 0; i < TAM_TABULEIRO; i++) {
         for (int j = 0; j < TAM_TABULEIRO; j++) {
-            // Imprime o número e um espaço em branco para facilitar a visualização
             printf("%d ", tabuleiro[i][j]);
         }
-        // Pula para a próxima linha após terminar de imprimir as colunas
-        printf("\n");
+        printf("\n"); // Quebra de linha ao fim de cada linha da matriz
     }
 
     return 0;
